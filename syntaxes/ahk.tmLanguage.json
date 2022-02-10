@@ -44,10 +44,48 @@
           "example": ";comment"
         },
         {
-          "begin": "^\\s*/\\*",
+          "begin": "^\\s*/\\*(?!\\*)",
           "end": "^\\s*\\*/",
           "name": "comment.block.slashstar.ahk",
           "example": "/* comment */"
+        },
+        {
+          "begin": "^\\s*/\\*\\*",
+          "end": "^\\s*\\*/",
+          "name": "comment.block.documentation.ahk",
+          "example": "/** doc comment */",
+          "patterns": [
+            {
+              "captures": {
+                "1": {
+                  "name": "storage.type.class.ahkdoc",
+                  "example": "@param"
+                },
+                "2": {
+                  "name": "entity.name.type.instance.ahkdoc",
+                  "example": "{string}"
+                },
+                "3": {
+                  "name": "variable.other.ahkdoc"
+                }
+              },
+              "match": "(@\\w+)\\s*({\\w+})*\\s*(\\w+)?",
+              "example": "@tag {any} variable",
+              "name": "comment.docline.ahkdoc"
+            },
+            {
+              "captures": {
+                "1": {
+                  "name": "storage.type.class.inlinedoc.ahkdoc"
+                },
+                "2": {
+                  "name": "variable.other.inlinedoc.ahkdoc"
+                }
+              },
+              "match": "{(@link)\\s+(\\w+)}",
+              "name": "entity.name.type.instance.inlinedoc.ahkdoc"
+            }
+          ]
         }
       ]
     },
@@ -182,7 +220,7 @@
       "patterns": [
         {
           "match": "\\b(?!MsgBox)(?i:this)\\b",
-          "name": "support.class.ahk",
+          "name": "keyword.class.ahk",
           "example": "this"
         },
         {
