@@ -27,7 +27,7 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
             } else {
                 completionItem.insertText = new SnippetString(method.name + "($1)")
             }
-            completionItem.detail = method.comment;
+            completionItem.documentation = method.comment?.dumpMarkdownText(new vscode.MarkdownString());
             result.push(completionItem);
             if (method.document == document && position.line >= method.line && position.line <= method.endLine) {
                 for (const param of method.params) {

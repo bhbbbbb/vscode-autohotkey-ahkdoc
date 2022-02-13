@@ -32,11 +32,12 @@ export class AhkHoverProvider implements HoverProvider {
 
         const method = await Parser.getMethodByName(document, context.word)
         if (method) {
-            const markdonw = new MarkdownString("", true).appendCodeblock(method.full)
+            const markdown = new MarkdownString("", true).appendCodeblock(method.full)
+            markdown.appendMarkdown("---\n");
             if (method.comment) {
-                markdonw.appendText(method.comment)
+                method.comment.dumpMarkdownText(markdown);
             }
-            return new Hover(markdonw)
+            return new Hover(markdown)
         }
 
         return null

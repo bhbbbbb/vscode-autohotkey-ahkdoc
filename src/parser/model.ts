@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ahkDoc } from "./ahkdoc";
 
 export interface Script {
     methods: Method[];
@@ -9,29 +10,92 @@ export interface Script {
 }
 
 export interface Variable {
-    name: string; document: vscode.TextDocument; line: number; character: number;
-    method: Method; isGlobal: boolean;
+    name: string;
+    document: vscode.TextDocument;
+    line: number;
+    character: number;
+    method: Method;
+    isGlobal: boolean;
 }
 
-export class Label {
-    constructor(public name: string, public document: vscode.TextDocument, public line: number, public character: number) { }
+class Identifier {
+    constructor(
+        public name: string,
+        public document: vscode.TextDocument,
+        public line: number,
+        public character: number,
+        public documentation?: ahkDoc
+    ) { }
+}
+export class Label extends Identifier {
 }
 
-export class Ref {
-    constructor(public name: string, public document: vscode.TextDocument, public line: number, public character: number) { }
+export class Ref extends Identifier {
 }
 
 export class Block {
-    constructor(public name: string, public document: vscode.TextDocument, public line: number, public character: number) { }
+    constructor(
+        public name: string,
+        public document: vscode.TextDocument,
+        public line: number,
+        public character: number
+    ) { }
 }
 
+export class Class extends Identifier {
+
+}
+
+/**
+ * @prop {number} line line count of the start pos. of doc i.e. '/**'
+ * @prop {number} height how many line that this doc have (note: line + height - 1 <=> endline'*\/')
+ */
+export class Comment {
+    public readonly line: number;
+    public readonly height: number;
+    public readonly content: string[];
+
+    /**
+     * 
+     * @param line 
+     * @param rawContent content that keep both '/*' and '*\/'
+     */
+    constructor(line: number, rawContent: string[]) {
+        this.line = line;
+        this.height = rawContent.length;
+        if (this.height === 1) {
+            this.content = [ rawContent[0].replace(/^\s*\;/, "").trim() ];
+        }
+        else {
+            let tem = rawContent.slice(0, -1);
+            tem[0] = tem[0].replace(/^\s*\/\*/, "").trim();
+            this.content = tem;
+        }
+    }
+    get plainText(): string {
+        return this.content.join();
+    }
+    public dumpMarkdownText(markdownTextRef: vscode.MarkdownString): vscode.MarkdownString {
+        return markdownTextRef.appendMarkdown(this.content.join("\n\n"));
+    }
+}
+/**
+ * @prop {boolean} withQuote whether the function have '{' with ')' in the same line
+ */
 export class Method {
     public params: string[];
     public variables: Variable[];
     public full: string;
     public endLine: number;
-    constructor(public origin: string, public name: string, public document: vscode.TextDocument,
-        public line: number, public character: number, public withQuote: boolean, public comment: string) {
+    constructor(
+        public origin: string,
+        public name: string,
+        public document: vscode.TextDocument,
+        public line: number,
+        public character: number,
+        public withQuote: boolean,
+        public comment: Comment,
+        ) {
         this.buildParams();
         this.variables = []
     }
@@ -68,5 +132,4 @@ export class Method {
             this.variables.push(variable)
         }
     }
-
 }

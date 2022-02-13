@@ -10,7 +10,7 @@ export class SymBolProvider implements vscode.DocumentSymbolProvider {
 
         for (const method of script.methods) {
             result.push(
-                new vscode.SymbolInformation(method.full, vscode.SymbolKind.Method, method.comment,
+                new vscode.SymbolInformation(method.full, vscode.SymbolKind.Method, method.comment.plainText,
                     new vscode.Location(method.document.uri, new vscode.Position(method.line, method.character))
                 )
             )
