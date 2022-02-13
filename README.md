@@ -1,17 +1,34 @@
-# VSCode-AutoHotkey-Plus
+# AHKDoc
+AHKDoc is a fork of [vscode-autohotkey-plus by cweijan](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus) with additional support for documentation called AHKdoc.
 
-AutoHotKey language support for VSCode
-- [vscode-autohotkey-Plus](#vscode-autohotkey-plus)
-  - [Start](#start)
+Ahkdoc is inspired by [JSDoc](https://jsdoc.app/index.html). 
+
+This is an early version, and there is still a lot to be done.
+
+Currently, it is very similar to jsdoc.
+
+More functionality and better documentation will be coming in future version.
+
+
+  - [AHKDoc](#AHKDoc#AHKDoc)
   - [Debug](#debug)
   - [Language Features](#language-features)
   - [Context Menu](#context-menu)
   - [Setting](#setting)
   - [Credits](#credits)
 
-## Start
+<!--## Start
 
-Install  [vscode-autohotkey-plus](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus) from vscode marketplace.
+Install  [vscode-autohotkey-plus](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus) from vscode marketplace.-->
+
+## AHKDoc
+
+- ![ahkdoc](image/ahkdoc.jpg)
+
+- ![ahkdoc_hover](image/ahkdoc_hover.png)
+
+- ![ahkCompletion](image/autoCompletion.jpg)
+
 
 ## Debug
 
@@ -46,4 +63,4 @@ OpenSetting -> extensions -> Ahk Plus
 ![settings](image/settings.jpg)
 
 ## Credits
-- [vscode-autohotkey](https://github.com/stef-levesque/vscode-autohotkey)
+- [vscode-autohotkey-plus by cweijan](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus)
