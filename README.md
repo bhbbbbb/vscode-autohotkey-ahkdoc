@@ -17,9 +17,9 @@ More functionality and better documentation will be coming in future version.
   - [Setting](#setting)
   - [Credits](#credits)
 
-<!--## Start
+## Start
 
-Install  [vscode-autohotkey-plus](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus) from vscode marketplace.-->
+Install  [vscode-autohotkey-ahkdoc](https://marketplace.visualstudio.com/items?itemName=bhbbbbb.vscode-autohotkey-ahkdoc) from vscode marketplace.
 
 ## AHKDoc
 

@@ -1,9 +1,9 @@
 {
-	"name": "vscode-autohotkey-plus",
-	"displayName": "AutoHotkey Plus",
-	"description": "AutoHotkey language support for VS Code",
-	"version": "2.6.2",
-	"publisher": "cweijan",
+	"name": "vscode-autohotkey-ahkdoc",
+	"displayName": "AutoHotkey with Doc",
+	"description": "AutoHotkey language support with documentation",
+	"version": "0.5.0",
+	"publisher": "bhbbbbb",
 	"engines": {
 		"vscode": "^1.30.0"
 	},
@@ -20,12 +20,12 @@
 	"license": "SEE LICENSE IN LICENSE.md",
 	"icon": "icon.png",
 	"bugs": {
-		"url": "https://github.com/cweijan/vscode-autohotkey/issues"
+		"url": "https://github.com/bhbbbbb/vscode-autohotkey-ahkdoc/issues"
 	},
-	"homepage": "https://github.com/cweijan/vscode-autohotkey/blob/master/README.md",
+	"homepage": "https://github.com/bhbbbbb/vscode-autohotkey-ahkdoc",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/cweijan/vscode-autohotkey.git"
+		"url": "https://github.com/bhbbbbb/vscode-autohotkey-ahkdoc.git"
 	},
 	"galleryBanner": {
 		"color": "#5c2d91",
