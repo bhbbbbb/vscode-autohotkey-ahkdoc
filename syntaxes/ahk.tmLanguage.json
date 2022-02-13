@@ -67,23 +67,115 @@
                 },
                 "3": {
                   "name": "variable.other.ahkdoc"
+                },
+                "4": {
+                  "name": "comment.description.ahkdoc",
+                  "patterns": [
+                    {
+                      "match": "{(@link)\\s*(\\w*)\\s*(\\w.*)?}",
+                      "name": "entity.name.type.instance.inline.ahkdoc",
+                      "captures": {
+                        "1": {
+                          "name": "storage.type.class.inline.ahkdoc"
+                        },
+                        "2": {
+                          "name": "variable.other.inline.ahkdoc"
+                        }
+                      }
+                    }
+                  ]
                 }
               },
-              "match": "(@\\w+)\\s*({\\w+})*\\s*(\\w+)?",
-              "example": "@tag {any} variable",
-              "name": "comment.docline.ahkdoc"
+              "match": "((?i:@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\\s*({.*?})?\\s*(\\b\\S+\\b)?\\s*(((?:[^@\n]|{@link)+\\s)*)",
+              "example": "@param {any} variable descrition of param",
+              "name": "comment.typevar.docline.ahkdoc"
             },
             {
               "captures": {
                 "1": {
-                  "name": "storage.type.class.inlinedoc.ahkdoc"
+                  "name": "storage.type.class.ahkdoc",
+                  "example": "@returns"
                 },
                 "2": {
-                  "name": "variable.other.inlinedoc.ahkdoc"
+                  "name": "entity.name.type.instance.ahkdoc",
+                  "example": "{string}"
+                },
+                "3": {
+                  "name": "comment.description.ahkdoc",
+                  "patterns": [
+                    {
+                      "match": "{(@link)\\s*(\\w*)\\s*(\\w.*)?}",
+                      "name": "entity.name.type.instance.inline.ahkdoc",
+                      "captures": {
+                        "1": {
+                          "name": "storage.type.class.inline.ahkdoc"
+                        },
+                        "2": {
+                          "name": "variable.other.inline.ahkdoc"
+                        }
+                      }
+                    }
+                  ]
                 }
               },
-              "match": "{(@link)\\s+(\\w+)}",
-              "name": "entity.name.type.instance.inlinedoc.ahkdoc"
+              "match": "((?i:@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send))\\s*({.*?})?\\s*(((?i:[^@\n]|{@link)+\\s)*)",
+              "example": "@returns {any} description of return",
+              "name": "comment.type.docline.ahkdoc"
+            },
+            {
+              "captures": {
+                "1": {
+                  "name": "storage.type.class.ahkdoc",
+                  "example": "@author"
+                },
+                "2": {
+                  "name": "variable.other.ahkdoc",
+                  "patterns": [
+                    {
+                      "match": "{(@link)\\s*(\\w*)\\s*(\\w.*)?}",
+                      "name": "entity.name.type.instance.inline.ahkdoc",
+                      "captures": {
+                        "1": {
+                          "name": "storage.type.class.inline.ahkdoc"
+                        },
+                        "2": {
+                          "name": "variable.other.inline.ahkdoc"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "match": "((?:@author|@see|@goto|@gosub))\\s*(((?:[^@\n]|{@link)+\\s)*)",
+              "example": "@author Smark Lin",
+              "name": "comment.var.docline.ahkdoc"
+            },
+            {
+              "captures": {
+                "1": {
+                  "name": "storage.type.class.ahkdoc",
+                  "example": "@customtag"
+                },
+                "2": {
+                  "name": "comment.other.ahkdoc",
+                  "patterns": [
+                    {
+                      "match": "{(@link)\\s*(\\w*)\\s*(\\w.*)?}",
+                      "name": "entity.name.type.instance.inline.ahkdoc",
+                      "captures": {
+                        "1": {
+                          "name": "storage.type.class.inline.ahkdoc"
+                        },
+                        "2": {
+                          "name": "variable.other.inline.ahkdoc"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              "match": "(@\\w+)\\s*(((?:[^@\n]|{@link)+\\s)*)",
+              "example": "@customtag description of tag"
             }
           ]
         }

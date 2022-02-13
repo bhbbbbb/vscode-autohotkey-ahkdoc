@@ -19,11 +19,14 @@
         ["\"", "\""],
         ["'", "'"],
         {
-          "open": "/*",
-          "close": "\n\n*/",
-          "notIn": [
-            "string"
-          ]
+            "open": "/**",
+            "close": " */",
+            "notIn": ["string"]
+        },
+        {
+            "open": "/*",
+            "close": " */",
+            "notIn": ["string"]
         }
     ],
     // symbols that that can be used to surround a selection
@@ -41,5 +44,27 @@
             "start": "^(\\/\\*)?\\s*\\;\\s*region\\b",
             "end": "^(\\*\\/)?\\s*\\;\\s*endregion\\b"
         }
-    }
+    },
+    "onEnterRules": [
+        {
+            "beforeText": "^\\s*\/\\*\\*+?",
+            "action": {
+                "appendText": " * ",
+                "indent": "indentOutdent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\\*(?!\/)\\s*",
+            "action": {
+                "appendText": "* ",
+                "indent": "none"
+            }
+        },
+        {
+            "beforeText": "^\\s*\/\\*(?!\\*)",
+            "action": {
+                "indent": "indentOutdent"
+            }
+        }
+    ]
 }
