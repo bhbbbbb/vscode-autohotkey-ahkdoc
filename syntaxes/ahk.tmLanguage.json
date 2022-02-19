@@ -9,7 +9,7 @@
       "include": "#comment"
     },
     {
-      "include": "#string"
+      "include": "#block-string"
     },
     {
       "include": "#script-block"
@@ -86,7 +86,7 @@
                   ]
                 }
               },
-              "match": "((?i:@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\\s*({.*?})?\\s*(\\b\\S+\\b)?\\s*(((?:[^@\n]|{@link)+\\s)*)",
+              "match": "((?i:@byref|@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\\s*({.*?})?\\s*(\\b\\S+\\b)?\\s*(((?:[^@\n]|{@link)+\\s)*)",
               "example": "@param {any} variable descrition of param",
               "name": "comment.typevar.docline.ahkdoc"
             },
@@ -181,13 +181,82 @@
         }
       ]
     },
-    "string": {
+    "block-string": {
       "patterns": [
         {
-          "begin": "^\\s*\\((?!.*\\))",
+          "begin": "^\\s*(\\()(((?i:join\\S{0,15}|comments|comment|com|c|ltrim|rtrim0|%|,|`)\\s+)*)(?!.*(?:\\)|;\\s*?code))",
           "end": "^\\s*\\)",
-          "name": "string.ahk",
-          "comment": "I can't get mean."
+          "name": "string.blockstring.ahk",
+          "comment": "I can't get mean.",
+          "beginCaptures": {
+            "1": {
+              "name": "string.blockstring.begin.parenthesis.ahk"
+            },
+            "2": {
+              "name": "keyword.blockstring.options.ahk",
+              "patterns": [
+                {
+                  "match": "\\b(?i:join(\\S{0,15})|comments|comment|com|c|ltrim|rtrim0|%|,|`)",
+                  "captures": {
+                    "1": {
+                      "name": "string.regexp.option.ahk"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "begin": "^\\s*(\\()(((?i:join\\S{0,15}|comments|comment|com|c|ltrim|rtrim0|%|,|`)\\s+)*).*?(;\\s*code\\s*)$",
+          "end": "^\\s*\\)",
+          "comment": "this is a mulit line block for programing",
+          "endCaptures": {
+            "0": {
+              "name": "string.blockstring.end.parenthesis.ahk"
+            }
+          },
+          "beginCaptures": {
+            "1": {
+              "name": "string.blockstring.begin.parenthesis.ahk"
+            },
+            "2": {
+              "name": "keyword.blockstring.options.ahk",
+              "patterns": [
+                {
+                  "match": "\\b(?i:join(\\S{0,15})|comments|comment|com|c|ltrim|rtrim0|%|,|`)",
+                  "captures": {
+                    "1": {
+                      "name": "string.regexp.option.ahk"
+                    }
+                  }
+                }
+              ]
+            },
+            "4": {
+              "name": "comment.line.semicolon.code.ahk"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comment"
+            },
+            {
+              "include": "#script-block"
+            },
+            {
+              "include": "#function-call"
+            },
+            {
+              "include": "#keyword"
+            },
+            {
+              "include": "#punctuation"
+            },
+            {
+              "include": "#text"
+            }
+          ]
         }
       ]
     },
@@ -334,6 +403,10 @@
           "name": "constant.numeric.ahk"
         },
         {
+          "match": "\\b(?i:true|false)\\b",
+          "name": "keyword.boolean.ahk"
+        },
+        {
           "match": "\\+|-|\\*|\\^|/|&|#|!|~|\\|",
           "name": "keyword.operator.arithmetic.ahk"
         },
@@ -371,24 +444,48 @@
               "name": "entity.name.function.ahk"
             },
             "2": {
-              "name": "punctuation.bracket.parenthesis.ahk"
+              "name": "punctuation.bracket.parenthesis.ahk",
+              "patterns": [
+                {
+                  "begin": "\\(",
+                  "end": "\\)",
+                  "patterns": [
+                    {
+                      "captures": {
+                        "1": {
+                          "name": "storage.type.byref.ahk"
+                        },
+                        "2": {
+                          "name": "variable.ahk"
+                        },
+                        "3": {
+                          "name": "test.ahk",
+                          "patterns": [
+                            {
+                              "include": "#keyword"
+                            },
+                            {
+                              "include": "#text"
+                            }
+                          ]
+                        }
+                      },
+                      "match": "((?i:byref)?)\\s+?(\\w+)(\\s*:?=\\s*(.+?))?[\\),]",
+                      "name": "meta.parameters.ahk",
+                      "example": "(param1, byref param2 := 3)"
+                    }
+                  ]
+                }
+              ]
             },
             "3": {
-              "patterns":[{
-                "include": "#text"
-              }]
-            },
-            "4": {
-              "name": "punctuation.bracket.parenthesis.ahk"
-            },
-            "5": {
               "name": "punctuation.bracket.curly.ahk"
             },
-            "6": {
+            "4": {
               "name": "comment.line.semicolon.functionline.ahk"
             }
           },
-          "match": "(?i:^(\\s*\\w+)(?<!if|while)(\\()(.*)(\\))\\s*({)\\s*(;?.*)$)",
+          "match": "(?i:^(\\s*\\w+)(?<!if|while)(\\(.*\\))\\s*({)\\s*(;?.*)$)",
           "name": "functionline.ahk",
           "example": "fun(){"
         }
