@@ -10,17 +10,11 @@ Currently, it is very similar to jsdoc.
 More functionality and better documentation will be coming in future version.
 
 
-  - [AHKDoc](#AHKDoc#AHKDoc)
-  - [Debug](#debug)
-  - [Language Features](#language-features)
-  - [Context Menu](#context-menu)
-  - [Setting](#setting)
-  - [Credits](#credits)
-
 ## Start
 
 Install  [vscode-autohotkey-ahkdoc](https://marketplace.visualstudio.com/items?itemName=bhbbbbb.vscode-autohotkey-ahkdoc) from vscode marketplace.
 
+---
 ## AHKDoc
 
 - ![ahkdoc](image/ahkdoc.jpg)
@@ -29,38 +23,44 @@ Install  [vscode-autohotkey-ahkdoc](https://marketplace.visualstudio.com/items?i
 
 - ![ahkCompletion](image/autoCompletion.jpg)
 
+---
+## String-Block
 
-## Debug
 
-![debug](image/debug.gif)
+In ahk, string block can be start with several options, AhkDoc handle those options, making
+it prettier.
 
-**Features:**
-1. Click run button or press F9.
-2. Support breakpoint、stacktrace、variable
-4. **Output Message**: Recommend using `OutputDebug` command instead MsgBox when debug.
-4. **Evalute**: Set and get variable in debug evaluter.
+- ![stringblock without code](image/stringblock.jpg)
 
-This extension provides basic debugging functions. If you need more debugging functions(Like **conditional breakpoint**), install additional extension [vscode-autohotkey-debug](https://marketplace.visualstudio.com/items?itemName=zero-plusplus.vscode-autohotkey-debug).
+Sometime, we use this syntax for multi-line
+coding (unfortunately, ahk doesn't support it).
 
-## Language Features
+Simply add a `;code` tag at the end of the line start with `(`.
 
-This extension provides basic programming language support for autohotkey:
-- Method Symbol: ![methodSymbol](image/methodSymbol.png)
-- Goto Definition: param, variable, method(**press ctrl then click**)
-- Find References: Find method references(**shift+f12**).
-- Code Format(**Shift+Alt+F**)
-- Hover tip: Move mouse to method call or command. ![hover](image/hover.png)
-- Code Symbol: Add two semicolon to comment code block. ![codeSymbole](image/codeSymbol.png)
-- IntelliSense
+Note that in order to make `;code` be parsed as comment, the `comment` option (namely, `comments`, `com`, `c`) should be included in this string block.
 
-## Context Menu
 
-Support below function: ![context](image/context.png)
+
+- ![stringblock with code](image/stringblockCode.jpg)
+---
+
 
 ## Setting
 
 OpenSetting -> extensions -> Ahk Plus
 ![settings](image/settings.jpg)
 
+---
+## Versions
+### v0.5.0
+- add ahkdoc
+
+### v0.5.1
+- highlight byref
+- fix bug that enter on the line with `/**`
+- new tag `@byref`
+- make string block prettier see [String-Block](#String-Block)
+
+---
 ## Credits
 - [vscode-autohotkey-plus by cweijan](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus)
