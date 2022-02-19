@@ -61,6 +61,31 @@ OpenSetting -> extensions -> Ahk Plus
 - new tag `@byref`
 - make string block prettier see [String-Block](#String-Block)
 
+### v0.5.2
+- fix bug caused by v0.5.1
+- fix functionality working with `ByRef`
+
+---
+
+## Todo
+
+- [x] Join Ltrim ...
+- [x] Hightlight ByRef
+	- [x] byref support not in parser yet
+- [ ] parse method's default value
+- [ ] in `switch` default should be colored in same class as (`while if` ...)
+- [x] new tag @byref
+- [x] enter on the line with `/**`
+- [ ] color const (all uppercase var)
+- [ ] support for class
+	- [ ] get and set highlight
+	- [ ] `__New, __Get, __Call...` color fix (when '{' at the end of line)
+	- [ ] meta function syntax
+- [ ] @link @see
+- [ ] @deprecated
+- [ ] fix variable colored as keyword (when keyword == Key Name)
+- [ ] object cannot have `,` at last prop
+
 ---
 ## Credits
 - [vscode-autohotkey-plus by cweijan](https://marketplace.visualstudio.com/items?itemName=cweijan.vscode-autohotkey-plus)
