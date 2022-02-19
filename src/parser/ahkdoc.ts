@@ -92,46 +92,6 @@ export class ahkDoc extends Comment {
 
     /**
      * 
-     * @deprecated remove this in future
-     * @param {string[]} content array of linetext of doc block.
-     * Block should be make sure in correct form of ahkdoc before this function.
-     * The start and end label (i.e. '\*' and '*\/') should be trimmed in super. {@link Comment}
-     * @returns 
-     */
-    private static generateMarkdownDoc(content: string[]): string {
-        let blockText = "";
-        for (let line of content) {
-            line = line.replace(/\s*\*/, "").trim() + "\n\n";
-            blockText += line;
-        }
-
-        const typevarTagPattern = /((?:@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\s*({.*?})?\s*(\b\S+\b)?\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
-        const typeTagPattern = /((?:@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send))\s*({.*?})?\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
-        const varTagPattern = /((?:@author|@see|@goto|@gosub))\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
-        const customTagPattern = /(@\w+)\b(?<!@link|@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist|@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send|@author|@see|@goto|@gosub)\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
-        const inlineTagPattern = /{@link\s*(\w*)\s*(\w.*)?}/gmi;
-        
-        blockText = blockText.replace(typevarTagPattern, (match, p1, p2, p3, p4) => {
-            if (p3) p3 = `\`${p3}\``;
-            return `*${p1}* ${p2 ? p2 : ""} ${p3 ? p3 : ""} ${p4 ? p4 : "\n\n"}`;
-        });
-
-        blockText = blockText.replace(typeTagPattern, (match, p1, p2, p3) => `*${p1}* ${p2 ? p2 : ""} ${p3 ? p3 : "\n\n"}`);
-
-        blockText = blockText.replace(varTagPattern, (match, p1, p2) => `*${p1}* ${p2 ? p2 : "\n\n"}`);
-
-        blockText = blockText.replace(customTagPattern, (match, p1, p2) => `*${p1}* ${p2 ? p2 : ""}`);
-
-        blockText = blockText.replace(inlineTagPattern, (match, p1, p2) => {
-            if (p2) p1 = p2;
-            return `[${p1 ? p1 : ""}]()`;
-        });
-
-        return blockText;
-    }
-
-    /**
-     * 
      * @param {string[]} content array of linetext of doc block.
      * Block should be make sure in correct form of ahkdoc before this function.
      * The start and end label (i.e. '\*' and '*\/') should be trimmed in super. {@link Comment}
@@ -144,12 +104,12 @@ export class ahkDoc extends Comment {
             blockText += line;
         }
 
-        const typevarTagPattern = /((?:@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\s*({.*?})?\s*(\b\S+\b)?\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
+        const typevarTagPattern = /((?:@member|@byref|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist))\s*({.*?})?\s*(\b\S+\b)?\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
         const typeTagPattern = /((?:@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send))\s*({.*?})?\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
         const varTagPattern = /((?:@author|@see|@goto|@gosub))\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
         const examplePattern = /(@example)\s*([^@]*)/gmi;
         // const customTagPattern = /(@\w+)\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
-        const customTagPattern = /(@\w+)\b(?<!@link|@member|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist|@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send|@author|@see|@goto|@gosub)\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
+        const customTagPattern = /(@\w+)\b(?<!@link|@member|@byref|@param|@arg|@argument|@property|@prop|@global|@if|@ifwinactive|@ifwinnotactive|@ifwinexist|@ifwinnotexist|@private|@protected|@public|@readonly|@returns|@return|@throws|@exception|@type|@send|@author|@see|@goto|@gosub)\s*(((?:[^@\n]|{@link)+\s)*)/gmi;
         const descriptionPattern = /^((?:[^@\n]|{@link)+\s)+/gmi;
 
         let result: BlockTag[] = [];

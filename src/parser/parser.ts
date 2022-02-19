@@ -132,7 +132,7 @@ export class Parser {
         }
         const script: Script = { methods, labels, refs, variables, blocks }
         this.documentCache.set(document.uri.path, script)
-        console.log(script)
+        // console.log(script)
         return script;
     }
 
