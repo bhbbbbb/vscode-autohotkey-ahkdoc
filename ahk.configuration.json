@@ -48,9 +48,17 @@
     "onEnterRules": [
         {
             "beforeText": "^\\s*\/\\*\\*+?",
+            "afterText": ".*?\\*\\/$",
             "action": {
                 "appendText": " * ",
                 "indent": "indentOutdent"
+            }
+        },
+        {
+            "beforeText": "^\\s*\/\\*\\*+?",
+            "action": {
+                "appendText": " * ",
+                "indent": "none"
             }
         },
         {
