@@ -1,5 +1,5 @@
 import { assert } from "console";
-import { Comment } from "./model";
+import { Comment } from "../parser/model";
 import { MarkdownString } from "vscode";
 export class Link {
     public index: number;
@@ -73,7 +73,7 @@ export class BlockTag {
     }
 }
 
-export class ahkDoc extends Comment {
+export default class ahkDoc extends Comment {
     public tags: BlockTag[];
     constructor(line: number, block: string[]) {
         super(line, block);

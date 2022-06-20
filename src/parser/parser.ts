@@ -2,8 +2,18 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 import { CodeUtil } from "../common/codeUtil";
 import { Out } from "../common/out";
-import { Script, Method, Ref, Label, Block, Variable, Comment } from "./model";
-import { ahkDoc } from "./ahkdoc";
+// import { Script, Method, Ref, Label, Block, Variable, Comment } from "./model";
+// import { ahkDoc } from "./models/ahkdoc";
+import Script from "../models/script";
+import Method from "../models/method";
+import Ref from "../models/ref";
+import Label from "../models/label";
+import Block from "../models/block";
+import Variable from "../models/variable";
+import Comment from "../models/comment";
+
+import CommentParser from "./comment-parser";
+import MethodParser from "./method-parser";
 
 export class Parser {
 
@@ -39,7 +49,10 @@ export class Parser {
      * detect method list by document
      * @param document 
      */
-    public static async buildScript(document: vscode.TextDocument, usingCache = false): Promise<Script> {
+    public static async buildScript(
+        document: vscode.TextDocument,
+        usingCache: boolean = false,
+    ): Promise<Script> {
 
         if (usingCache && null != this.documentCache.get(document.uri.path)) {
             return this.documentCache.get(document.uri.path)
@@ -54,44 +67,17 @@ export class Parser {
         let currentMethod: Method;
         let deep = 0;
         const lineCount = Math.min(document.lineCount, 10000);
-        let blockComment = false;
-        let ahkDocComment = false;
-        let blockCommentLines: string[] = [];
+
         for (let line = 0; line < lineCount; line++) {
+
             const lineText = document.lineAt(line).text;
-            if (!lineText.trim()) {
-                continue;
-            }
-            if (lineText.match(/^\s*;/)) { // single line comment
-                currentComment = new Comment(line, [lineText]);
-                continue;
-            }
-            else if (lineText.match(/^\s*\/\*(?!\*)/)) { // normal block comment
-                blockComment = true;
-                blockCommentLines.push(lineText);
-            }
-            else if (lineText.match(/^\s*\/\*\*/)) { // ahkdoc block comment
-                blockComment = true;
-                ahkDocComment = true;
-                blockCommentLines.push(lineText);
-            }
-            else if (blockComment && lineText.match(/^\s*\*\//)) { // end block comment
-                blockCommentLines.push(lineText);
-                if (ahkDocComment) {
-                    currentComment = new ahkDoc(line - blockCommentLines.length, blockCommentLines);
-                }
-                else {
-                    currentComment = new Comment(line - blockCommentLines.length, blockCommentLines);
-                }
-                blockCommentLines = [];
-                blockComment = false;
-                ahkDocComment = false;
-            }
-            else if (blockComment) {
-                blockCommentLines.push(lineText);
-                continue;
-            }
-            const methodOrRef = Parser.detechMethodByLine(document, line, currentComment);
+
+            if (!lineText.trim()) continue;
+
+            ({ comment: currentComment, endLine: line } = CommentParser.parseByLine(document, line));
+            
+            const methodOrRef = MethodParser.parseByLine(document, line, currentComment);
+
             if (methodOrRef) {
                 if (methodOrRef instanceof Method) {
                     methods.push(methodOrRef);
@@ -102,6 +88,7 @@ export class Parser {
                 } else {
                     CodeUtil.join(refs, methodOrRef)
                 }
+                currentComment = null;
             }
             const label = Parser.getLabelByLine(document, line);
             if (label) {
@@ -243,67 +230,6 @@ export class Parser {
         return null;
     }
 
-    /**
-     * detect method by line
-     * @todo last function won't be detected
-     * @param document
-     * @param line
-     * @returns {Method | Ref | Ref[]}
-     */
-    private static detechMethodByLine(document: vscode.TextDocument, line: number, lastComment: Comment, origin?: string): Method | Ref | Ref[] {
-
-        origin = origin != undefined ? origin : document.lineAt(line).text;
-        const text = CodeUtil.purityMethod(origin);
-        const refPattern = /\s*(([\u4e00-\u9fa5_a-zA-Z0-9]+)(?<!if|while)\(.*?\))\s*(\{)?\s*/i
-        const methodMatch = text.match(refPattern);
-        if (!methodMatch) {
-            return;
-        }
-        const methodName = methodMatch[2];
-        const character = origin.indexOf(methodName);
-        if (text.length != methodMatch[0].length) {
-            // in this case there is no '{' thus this would be ref
-            let refs = [new Ref(methodName, document, line, character)];
-            const newRef = this.detechMethodByLine(document, line, lastComment, origin.replace(new RegExp(methodName + "\\s*\\("), ""));
-            CodeUtil.join(refs, newRef)
-            return refs
-        }
-        const methodFullName = methodMatch[1];
-        const isMethod = methodMatch[3];
-        if (isMethod) {
-            return new Method(methodFullName, methodName, document, line, character, true, Parser.checkRemarkOwnership(document, lastComment, line));
-        }
-        for (let i = line + 1; i < document.lineCount; i++) {
-            const nextLineText = CodeUtil.purityMethod(document.lineAt(i).text);
-            if (!nextLineText.trim()) { continue; }
-            if (nextLineText.match(/^\s*{/)) {
-                return new Method(methodFullName, methodName, document, line, character, false, Parser.checkRemarkOwnership(document, lastComment, line));
-            } else {
-                return new Ref(methodName, document, line, character)
-            }
-        }
-    }
-
-    /**
-     * detech remark, remark format: ;any , /* comment *\/, /** ahkdoc *\/
-     * @param coment 
-     * @param line line that contain Method / Class / Label
-     */
-    private static checkRemarkOwnership(document: vscode.TextDocument, comment: Comment, line: number) {
-        if (!comment) return null;
-        if (line >= 0) {
-            const endline = comment.line + comment.height;
-            if (endline > line) return null;
-            else if (line - endline >= 0) {
-                for (let i = line - endline; i > 0; i--) {
-                    const { text } = document.lineAt(line - i);
-                    if (!text.trim()) return null;
-                }
-                return comment;
-            }
-        }
-        return null;
-    }
 
     public static joinVars(variables: Variable[], items: Variable | Variable[]) {
         if (variables == undefined || items == undefined) {
