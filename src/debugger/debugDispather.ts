@@ -16,7 +16,7 @@ import { spawn } from 'child_process';
 import { resolve } from 'path';
 import { existsSync } from 'fs';
 import { Out } from '../common/out';
-import { Global, ConfigKey } from '../common/global';
+import { Global } from '../common/global';
 
 /**
  * A Ahk runtime debugger.
@@ -43,7 +43,7 @@ export class DebugDispather extends EventEmitter {
 		let { runtime, dbgpSettings = {} } = args;
 		const { max_children, max_data } = { max_children: 300, max_data: 131072, ...dbgpSettings };
 		if (!runtime) {
-			runtime = Global.getConfig(ConfigKey.executePath);
+			runtime = Global.CONFIG.executePath;
 		}
 
 		this.breakPointHandler = new BreakPointHandler();

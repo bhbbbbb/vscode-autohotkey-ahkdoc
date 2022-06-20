@@ -1,7 +1,7 @@
 import { resolve as res } from "path";
 import * as vscode from 'vscode';
 import { FileManager, FileModel } from '../common/fileManager';
-import { ConfigKey, Global } from '../common/global';
+import { Global } from '../common/global';
 import { Process } from '../common/processWrapper';
 
 export class RunnerService {
@@ -30,7 +30,7 @@ export class RunnerService {
             type: debugPlusExists ? "autohotkey" : "ahk",
             request: "launch",
             name: "Autohotkey Debugger",
-            runtime: Global.getConfig(ConfigKey.executePath),
+            runtime: Global.CONFIG.executePath,
             program: script
         });
     }
@@ -40,7 +40,7 @@ export class RunnerService {
      * @param path execute script path
      */
     public static async run(path?: string): Promise<void> {
-        const executePath = Global.getConfig(ConfigKey.executePath)
+        const executePath = Global.CONFIG.executePath
         this.checkAndSaveActive();
         if (!path) {
             path = await this.getPathByActive();
@@ -60,7 +60,7 @@ export class RunnerService {
         this.checkAndSaveActive();
         const pos = currentPath.lastIndexOf(".");
         const compilePath = currentPath.substr(0, pos < 0 ? currentPath.length : pos) + ".exe";
-        if (await Process.exec(`"${Global.getConfig(ConfigKey.compilePath)}" /in "${currentPath}" /out "${compilePath}"`, { cwd: `${res(currentPath, '..')}` })) {
+        if (await Process.exec(`"${Global.CONFIG.compilePath}" /in "${currentPath}" /out "${compilePath}"`, { cwd: `${res(currentPath, '..')}` })) {
             vscode.window.showInformationMessage("compile success!");
         }
     }

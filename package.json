@@ -232,24 +232,24 @@
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Ahk Plus",
+			"title": "AhkDoc",
 			"properties": {
-				"vscode-ahk-plus.executePath": {
+				"vscode-ahkdoc.executePath": {
 					"type": "string",
 					"default": "C:/Program Files/AutoHotkey/AutoHotkeyU64.exe",
 					"description": "Execute path of autohotkey."
 				},
-				"vscode-ahk-plus.compilePath": {
+				"vscode-ahkdoc.compilePath": {
 					"type": "string",
 					"default": "C:/Program Files/AutoHotkey/Compiler/Ahk2Exe.exe",
 					"description": "Compiler path of autohotkey."
 				},
-				"vscode-ahk-plus.documentPath": {
+				"vscode-ahkdoc.documentPath": {
 					"type": "string",
 					"default": "C:/Program Files/AutoHotkey/AutoHotkey.chm",
 					"description": "Document path of autohotkey."
 				},
-				"vscode-ahk-plus.enableIntelliSense": {
+				"vscode-ahkdoc.enableIntelliSense": {
 					"type": "boolean",
 					"default": true,
 					"description": "EnableIntelliSense(Preview)."
