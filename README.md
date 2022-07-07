@@ -69,6 +69,7 @@ OpenSetting -> extensions -> Ahk Plus
 
 ## Todo
 
+- Variadic Functions
 - [x] Join Ltrim ...
 - [x] Hightlight ByRef
 	- [x] byref support not in parser yet
