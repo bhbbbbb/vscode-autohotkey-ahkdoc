@@ -1,5 +1,5 @@
 import { assert } from "console";
-import { Comment } from "../parser/model";
+import Comment from "./comment";
 import { MarkdownString } from "vscode";
 export class Link {
     public index: number;

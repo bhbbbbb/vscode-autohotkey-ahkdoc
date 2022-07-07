@@ -37,7 +37,7 @@ export default class CommentParser {
 
         else if (lines[0].match(PATTERN.plainBlockComment)) isAhkdoc = false;
         
-        else return { endLine: line };
+        else return { comment: null, endLine: line };
 
 
         const lineCount = Math.min(staticConfig.maxDocumentLines, document.lineCount);

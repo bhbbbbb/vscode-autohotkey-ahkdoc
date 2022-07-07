@@ -15,6 +15,7 @@ import Comment from "../models/comment";
 import CommentParser from "./comment-parser";
 import MethodParser from "./method-parser";
 import LabelParser from "./label-parser";
+import { assert } from "console";
 
 export class Parser {
 
@@ -75,23 +76,40 @@ export class Parser {
 
         for (let line = 0; line < lineCount; line++) {
 
+            // console.log(`line: ${line}`);
+            // console.log(methods);
+
             const lineText = document.lineAt(line).text;
 
             if (!lineText.trim()) continue;
 
             ({ comment: temComment, endLine: line } = CommentParser.parseByLine(document, line));
             
-            if (temComment) currentComment = temComment;
-            
-            ({ method: currentMethod, refs: currentRefs, line } =
-                MethodParser.parseByLine(document, line, currentComment));
-
-            if (currentMethod) {
-                methods.push(currentMethod);
-                deep++;
-                currentComment = null;
+            if (temComment) {
+                currentComment = temComment;
+                continue;
             }
-            if (currentRefs) CodeUtil.join(refs, currentRefs);
+            
+            const tem = 
+                MethodParser.parseByLine(document, line, currentComment);
+            // ({ method: currentMethod, refs: currentRefs, line } =
+            //     MethodParser.parseByLine(document, line, currentComment));
+            
+            if (tem) {
+                ({ method: currentMethod, refs: currentRefs, line } = tem);
+                
+                if (currentMethod) {
+                    methods.push(currentMethod);
+                    deep++;
+                    currentComment = null;
+                }
+
+                if (currentRefs) CodeUtil.join(refs, currentRefs);
+
+                assert(currentMethod || currentRefs);
+                continue;
+            }
+
 
             const label = LabelParser.parseByLine(document, line, currentComment);
             if (label) {
@@ -108,7 +126,7 @@ export class Parser {
             }
             if (lineText.indexOf("}") !== -1) {
                 deep--;
-                if (currentMethod !== null) {
+                if (currentMethod) {
                     currentMethod.endLine = line
                 }
             }

@@ -4,6 +4,7 @@ import Method from "../models/method";
 import Comment from "../models/comment";
 import Ref from "../models/ref";
 import staticConfig from "../static.config";
+import CommentParser from "./comment-parser";
 
 interface NextLineReturnT {
     text?: string
@@ -48,13 +49,14 @@ export default class MethodParser {
         document: TextDocument,
         line: number,
         lastComment: Comment,
-        origin?: string,
-    ): ParserReturnT {
+        // origin?: string,
+    ): ParserReturnT | null {
 
-        const text = origin || document.lineAt(line).text;
+        // const text = origin || document.lineAt(line).text;
+        const text = document.lineAt(line).text;
         // const text = CodeUtil.purityMethod(origin);
         const methodMatch = text.match(REF_PATTERN) as RefMatchArr | null;
-        if (!methodMatch) return;
+        if (!methodMatch) return null;
 
         // parse ref
         if (!methodMatch[4]) { // no '{' at the end of line
@@ -73,7 +75,8 @@ export default class MethodParser {
             methodName,
             document,
             line,
-            origin.indexOf(methodName),
+            // origin.indexOf(methodName),
+            text.indexOf(methodName),
             methodMatch[RefMatchIdx.full],
             lastComment,
         );
@@ -102,7 +105,6 @@ export default class MethodParser {
      * 
      * @param document 
      * @param line 
-     * @returns {null} if get end of document
      * @returns line: line that contain `{`
      */
     private static getNextLine(document: TextDocument, line: number): NextLineReturnT {
@@ -111,7 +113,11 @@ export default class MethodParser {
 
         for (let i = line + 1; i < lineCount; i++) {
             const { text } = document.lineAt(i)
-            if (text.trim()) return { text, line: i };
+            if (text.trim()) {
+                let { comment, endLine } = CommentParser.parseByLine(document, i);
+                if (comment) i = endLine;
+                else return { text, line: i };
+            }
         }
 
         return { line: lineCount - 1 };
