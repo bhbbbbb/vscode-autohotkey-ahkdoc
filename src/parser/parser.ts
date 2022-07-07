@@ -14,6 +14,7 @@ import Comment from "../models/comment";
 
 import CommentParser from "./comment-parser";
 import MethodParser from "./method-parser";
+import LabelParser from "./label-parser";
 
 export class Parser {
 
@@ -24,6 +25,7 @@ export class Parser {
      * @param buildPath
      */
     public static async buildByPath(buildPath: string) {
+        console.log(`here: ${buildPath}`);
         if (!buildPath) return;
         if (fs.statSync(buildPath).isDirectory()) {
             fs.readdir(buildPath, (err, files) => {
@@ -59,12 +61,15 @@ export class Parser {
         }
 
         const methods: Method[] = [];
-        let refs: Ref[] = [];
+        const refs: Ref[] = [];
         const labels: Label[] = [];
         const variables: Variable[] = [];
         const blocks: Block[] = [];
+
         let currentComment: Comment = null;
-        let currentMethod: Method;
+        let temComment: Comment = null;
+        let currentMethod: Method = null;
+        let currentRefs: Ref[] = null;
         let deep = 0;
         const lineCount = Math.min(document.lineCount, 10000);
 
@@ -74,52 +79,51 @@ export class Parser {
 
             if (!lineText.trim()) continue;
 
-            ({ comment: currentComment, endLine: line } = CommentParser.parseByLine(document, line));
+            ({ comment: temComment, endLine: line } = CommentParser.parseByLine(document, line));
             
-            const methodOrRef = MethodParser.parseByLine(document, line, currentComment);
+            if (temComment) currentComment = temComment;
+            
+            ({ method: currentMethod, refs: currentRefs, line } =
+                MethodParser.parseByLine(document, line, currentComment));
 
-            if (methodOrRef) {
-                if (methodOrRef instanceof Method) {
-                    methods.push(methodOrRef);
-                    refs.push(new Ref(methodOrRef.name, document, line, methodOrRef.character))
-                    currentMethod = methodOrRef;
-                    if (methodOrRef.withQuote) deep++;
-                    continue;
-                } else {
-                    CodeUtil.join(refs, methodOrRef)
-                }
+            if (currentMethod) {
+                methods.push(currentMethod);
+                deep++;
                 currentComment = null;
             }
-            const label = Parser.getLabelByLine(document, line);
+            if (currentRefs) CodeUtil.join(refs, currentRefs);
+
+            const label = LabelParser.parseByLine(document, line, currentComment);
             if (label) {
                 labels.push(label);
+                currentComment = null;
                 continue;
             }
-            const block = Parser.getBlockByLine(document, line);
-            if (block) {
-                blocks.push(block);
-            }
-            if (lineText.indexOf("{") != -1) {
+            // const block = Parser.getBlockByLine(document, line);
+            // if (block) {
+            //     blocks.push(block);
+            // }
+            if (lineText.indexOf("{") !== -1) {
                 deep++;
             }
-            if (lineText.indexOf("}") != -1) {
+            if (lineText.indexOf("}") !== -1) {
                 deep--;
-                if (currentMethod != null) {
+                if (currentMethod !== null) {
                     currentMethod.endLine = line
                 }
             }
-            const variable = Parser.detechVariableByLine(document, line);
-            if (variable) {
-                if (deep == 0 || !currentMethod) {
-                    this.joinVars(variables, variable)
-                } else {
-                    currentMethod.pushVariable(variable)
-                }
-            }
+            // const variable = Parser.detechVariableByLine(document, line);
+            // if (variable) {
+            //     if (deep === 0 || !currentMethod) {
+            //         this.joinVars(variables, variable)
+            //     } else {
+            //         currentMethod.pushVariable(variable)
+            //     }
+            // }
         }
         const script: Script = { methods, labels, refs, variables, blocks }
         this.documentCache.set(document.uri.path, script)
-        // console.log(script)
+        console.log(script)
         return script;
     }
 
@@ -179,56 +183,52 @@ export class Parser {
         return refs;
     }
 
-    private static getBlockByLine(document: vscode.TextDocument, line: number): Block {
-        const { text } = document.lineAt(line);
-        const blockMatch = text.match(/;;(.+)/);
-        if (blockMatch) {
-            return { document, line, name: blockMatch[1], character: text.indexOf(blockMatch[1]) }
-        }
-    }
-
-    private static getLabelByLine(document: vscode.TextDocument, line: number) {
-        const text = CodeUtil.purity(document.lineAt(line).text);
-        const label = /^[ \t]*([\u4e00-\u9fa5_a-zA-Z0-9]+) *:{1}(?!(:|=))/.exec(text)
-        if (label) {
-            const labelName = label[1]
-            if (labelName.toLowerCase() == "case" || labelName.toLowerCase() == "default") return;
-            return new Label(label[1], document, line, text.indexOf(labelName));
-        }
-    }
+    /**
+     * not sure what is this.
+     */
+    // private static getBlockByLine(document: vscode.TextDocument, line: number): Block {
+    //     const { text } = document.lineAt(line);
+    //     const blockMatch = text.match(/;;(.+)/);
+    //     if (blockMatch) {
+    //         return { document, line, name: blockMatch[1], character: text.indexOf(blockMatch[1]) }
+    //     }
+    // }
 
 
-    private static varDefPattern = /[ \t]*(\w+?)\s*([+\-*/.:])?(?<![=!])=(?![=!]).+/
-    private static varCommandPattern = /(\w+)[ \t,]+/g
-    private static keywords = ['and','or','new','extends','if','loop']
-    private static detechVariableByLine(document: vscode.TextDocument, line: number): Variable | Variable[] {
+    private static readonly varDefPattern = /[ \t]*(\w+?)\s*([+\-*/.:])?(?<![=!])=(?![=!]).+/;
+    private static readonly varCommandPattern = /(\w+)[ \t,]+/g;
+    private static readonly keywords = ['and','or','new','extends','if','loop'];
+    // private static detechVariableByLine(document: vscode.TextDocument, line: number): Variable | Variable[] {
 
-        const lineText = CodeUtil.purity(document.lineAt(line).text);
+    //     const lineText = CodeUtil.purity(document.lineAt(line).text);
 
-        const defMatch = lineText.match(Parser.varDefPattern)
-        if (defMatch) {
-            const varName = defMatch[1];
-            return {
-                line, document, isGlobal: true, method: null, name: varName, character: lineText.indexOf(varName)
-            }
-        } else {
-            let vars = [];
-            const commandMatchAll = CodeUtil.matchAll(Parser.varCommandPattern, lineText.replace(/\(.+?\)/g,""))
-            for (let index = 0; index < commandMatchAll.length; index++) {
-                if (index == 0) continue;
-                const varName = commandMatchAll[index][1];
-                if(this.keywords.includes(varName.toLowerCase())){
-                    continue;
-                }
-                vars.push({
-                    line, document, isGlobal: true, method: null, name: varName, character: lineText.indexOf(commandMatchAll[index][0])
-                })
-            }
-            return vars;
-        }
+    //     const defMatch = lineText.match(Parser.varDefPattern)
+    //     if (defMatch) {
+    //         const varName = defMatch[1];
+    //         return {
+    //             line, document, isGlobal: true, method: null, name: varName, character: lineText.indexOf(varName)
+    //         }
+    //     } else {
+    //         let vars = [];
+    //         const commandMatchAll = CodeUtil.matchAll(
+    //             Parser.varCommandPattern,
+    //             lineText.replace(/\(.+?\)/g,"")
+    //         );
+    //         for (let index = 0; index < commandMatchAll.length; index++) {
+    //             if (index == 0) continue;
+    //             const varName = commandMatchAll[index][1];
+    //             if(this.keywords.includes(varName.toLowerCase())){
+    //                 continue;
+    //             }
+    //             vars.push({
+    //                 line, document, isGlobal: true, method: null, name: varName, character: lineText.indexOf(commandMatchAll[index][0])
+    //             })
+    //         }
+    //         return vars;
+    //     }
 
-        return null;
-    }
+    //     return null;
+    // }
 
 
     public static joinVars(variables: Variable[], items: Variable | Variable[]) {

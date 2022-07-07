@@ -21,12 +21,11 @@ export default class Method extends Identifier {
         line: number,
         character: number,
         public origin: string,
-        public withQuote: boolean,
         public comment: Comment,
     ) {
-        super(name, document, line, character)
+        super(name, document, line, character);
         this.buildParams();
-        this.variables = []
+        this.variables = [];
     }
 
     private buildParams() {

@@ -9,23 +9,10 @@ export class CodeUtil {
         return origin.replace(/;.+/, "")
             .replace(/".*?"/g, "")
             .replace(/\{.*?\}/g, "")
-            .replace(/ +/g, " ")
-            .replace(/\bgui\b.*/ig, "")
-            .replace(/\b(msgbox)\b.+?%/ig, "$1");
-    }
-
-    /**
-     * keep string "" version of purity
-     * @todo default param can be object
-     * @param {string} origin 
-     */
-    public static purityMethod(origin: string): string {
-        if (!origin) return "";
-        return origin.replace(/;.+/, "")
-            .replace(/\{.*?\}/g, "")
-            .replace(/ +/g, " ")
-            .replace(/\bgui\b.*/ig, "")
-            .replace(/\b(msgbox)\b.+?%/ig, "$1");
+            .replace(/\s+/g, " ")
+            // don't know what are these for
+            // .replace(/\bgui\b.*/ig, "")
+            // .replace(/\b(msgbox)\b.+?%/ig, "$1");
     }
 
     /**
@@ -33,8 +20,8 @@ export class CodeUtil {
      * @param array array to be added items
      * @param {any | any[]} items can be single or an array to be join with the prev. array
      */
-    public static join(array: any[], items: any | any[]) {
-        if (array == undefined || items == undefined) {
+    public static join<T>(array: T[], items: T | T[]) {
+        if (array === undefined || items === undefined) {
             return
         }
         if (Array.isArray(items)) {
@@ -52,7 +39,7 @@ export class CodeUtil {
             throw new Error("Only support global regex!");
         }
 
-        let regs = [];
+        let regs: RegExpExecArray[] = [];
         let temp: RegExpExecArray;
         while ((temp = regex.exec(text)) != null) {
             regs.push(temp)
