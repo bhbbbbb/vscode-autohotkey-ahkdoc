@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
-import { CodeUtil } from "../common/codeUtil";
+import codeUtil from "../common/codeUtil";
 import { Out } from "../common/out";
 // import { Script, Method, Ref, Label, Block, Variable, Comment } from "./model";
 // import { ahkDoc } from "./models/ahkdoc";
@@ -104,7 +104,7 @@ export class Parser {
                     currentComment = null;
                 }
 
-                if (currentRefs) CodeUtil.join(refs, currentRefs);
+                if (currentRefs) codeUtil.join(refs, currentRefs);
 
                 assert(currentMethod || currentRefs);
                 continue;

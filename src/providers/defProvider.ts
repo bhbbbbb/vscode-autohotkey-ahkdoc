@@ -4,7 +4,11 @@ import { existsSync } from "fs";
 
 export class DefProvider implements vscode.DefinitionProvider {
 
-    public async provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): Promise<vscode.Location | vscode.Location[] | vscode.LocationLink[]> {
+    public async provideDefinition(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+    ): Promise<vscode.Location | vscode.Location[] | vscode.LocationLink[]> {
 
         const fileLink = await this.tryGetFileLink(document, position);
         if (fileLink) {
@@ -34,14 +38,21 @@ export class DefProvider implements vscode.DefinitionProvider {
         for (const method of script.methods) {
             if (position.line >= method.line && position.line <= method.endLine) {
                 for (const variable of method.variables) {
-                    if (variable.name == word) {
+                    if (variable.name === word) { // ???
                         return new vscode.Location(document.uri, new vscode.Position(variable.line, variable.character));
                     }
                 }
                 for (const param of method.params) {
-                    if (param == word) {
+                    if (param.name === word) {
                         // TODO cannot find param character
-                        return new vscode.Location(document.uri, new vscode.Position(method.line, method.character + method.origin.indexOf(param)));
+                        return new vscode.Location(
+                            document.uri,
+                            new vscode.Position(
+                                method.line,
+                                // method.character + method.origin.indexOf(param),
+                                param.character,
+                            )
+                        );
                     }
                 }
             }

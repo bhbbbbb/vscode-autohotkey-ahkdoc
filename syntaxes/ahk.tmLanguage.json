@@ -470,7 +470,7 @@
                           ]
                         }
                       },
-                      "match": "((?i:byref)?)\\s*?(\\w+)(\\s*:?=\\s*(.+?))?[\\),]",
+                      "match": "((?i:byref)?)\\s*?(\\w+)\\s*\\*?(\\s*:?=\\s*(.+?))?[\\),]",
                       "name": "meta.parameters.ahk",
                       "example": "(param1, byref param2 := 3)"
                     }

@@ -6,6 +6,6 @@ export default interface Variable extends Identifier {
     // document: vscode.TextDocument;
     // line: number;
     // character: number;
-    method: Method;
+    method?: Method;
     isGlobal: boolean;
 }

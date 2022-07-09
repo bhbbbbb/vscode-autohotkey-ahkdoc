@@ -1,5 +1,4 @@
-import { CommentThreadCollapsibleState, TextDocument } from "vscode";
-import { CodeUtil } from "../common/codeUtil";
+import { TextDocument } from "vscode";
 import Method from "../models/method";
 import Comment from "../models/comment";
 import Ref from "../models/ref";
@@ -17,11 +16,6 @@ interface ParserReturnT {
     line: number
 }
 
-type RefMatchArr = [ string, string, string, string, string ] & RegExpMatchArray;
-// type RefMatchArr = [
-//     origin: string, full: string, name: string, params: string, leftBracket: string
-// ] & RegExpMatchArray;
-
 /**
  * @group0 foo (param1, param2) {
  * @group1 foo (param1, param2)
@@ -30,6 +24,11 @@ type RefMatchArr = [ string, string, string, string, string ] & RegExpMatchArray
  * @group4 {
  */
 const REF_PATTERN = /\s*(([\u4e00-\u9fa5_a-zA-Z0-9]+)(?<!if|while)\s*\((.*?)\))\s*(\{)?\s*/i;
+
+type RefMatchArr = [ string, string, string, string, string ] & RegExpMatchArray;
+// type RefMatchArr = [
+//     origin: string, full: string, name: string, params: string, leftBracket: string
+// ] & RegExpMatchArray;
 
 enum RefMatchIdx {
     origin, full, name, params, leftBracket,
@@ -49,7 +48,6 @@ export default class MethodParser {
         document: TextDocument,
         line: number,
         lastComment: Comment,
-        // origin?: string,
     ): ParserReturnT | null {
 
         // const text = origin || document.lineAt(line).text;
@@ -75,9 +73,9 @@ export default class MethodParser {
             methodName,
             document,
             line,
-            // origin.indexOf(methodName),
             text.indexOf(methodName),
             methodMatch[RefMatchIdx.full],
+            methodMatch[RefMatchIdx.params],
             lastComment,
         );
 

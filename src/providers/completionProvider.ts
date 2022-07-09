@@ -31,7 +31,7 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
             result.push(completionItem);
             if (method.document == document && position.line >= method.line && position.line <= method.endLine) {
                 for (const param of method.params) {
-                    result.push(new vscode.CompletionItem(param, vscode.CompletionItemKind.Variable));
+                    result.push(new vscode.CompletionItem(param.name, vscode.CompletionItemKind.Variable));
                 }
                 for (const variable of method.variables) {
                     result.push(new vscode.CompletionItem(variable.name, vscode.CompletionItemKind.Variable));
